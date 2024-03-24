@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:8080") // port kust frontend jookseb
 @RestController
@@ -21,32 +24,35 @@ public class ServerController {
     private final String apiUrl = "https://api.npoint.io/967c910691a90010739d";
 
     @GetMapping("/seansid")
-    public Seansid seansid() {
-        // Fetchin json andmed oma npoint binnist
+    public List<Seanss> seansid() {
+        // Fetch the JSON data from the API
         ExternalApiResponse response = restTemplate.getForObject(apiUrl, ExternalApiResponse.class);
 
-        // See mappimine on tehtud AI abiga
-        // Map the external response to your Seansid structure
-        List<Seanss> seanssList = response.getFilmid().stream()
-                .map(film -> {
-                    // Find the corresponding session information
-                    ExternalApiSeans seans = response.getSeansid().stream()
-                            .filter(s -> s.getFilm_id() == film.getId())
+        // Map the sessions to the Seanss structure and sort them by kuupäev and kell
+        List<Seanss> seanssList = response.getSeansid().stream()
+                .map(seans -> {
+                    // Find the corresponding film information
+                    ExternalApiFilm film = response.getFilmid().stream()
+                            .filter(f -> f.getId() == seans.getFilm_id())
                             .findFirst()
                             .orElse(null);
 
-                    if (seans != null) {
+                    if (film != null) {
                         return new Seanss(film.getId(), new Film(
                                 film.getId(), film.getFilm(), film.getAge(), film.getLength(), film.getGenre()
-                        ), seans.getKell(), Integer.parseInt(seans.getSaal()));
+                        ), seans.getKell(), Integer.parseInt(seans.getSaal()), seans.getKuupäev(), seans.getVabu_kohti());
                     }
                     return null;
                 })
-                .filter(s -> s != null) // filter out nulls in case there's no corresponding session
+                .filter(Objects::nonNull) // filter out nulls in case there's no corresponding film
+                .sorted(Comparator.comparing(Seanss::kuupäev).thenComparing(Seanss::kell))
                 .collect(Collectors.toList());
 
-        return new Seansid(seanssList);
+        return seanssList;
     }
+
+
+
 
     // Defineerin millisel kujul ma saan jsoni fetchiga kátte
     public static class ExternalApiResponse {
@@ -63,6 +69,8 @@ public class ServerController {
 
     }
 
+
+
     public static class ExternalApiFilm {
         private long id;
         private String film;
@@ -77,6 +85,7 @@ public class ServerController {
         public String getFilm() {
             return film;
         }
+
 
         public String getAge() {
             return age;
@@ -96,7 +105,10 @@ public class ServerController {
         private long film_id;
         private String kell;
         private String saal;
+        private String kuupäev; // added new field for date
+        private int vabu_kohti; // added new field for available seats
 
+        // Getters (and setters if needed)
         public long getFilm_id() {
             return film_id;
         }
@@ -109,9 +121,14 @@ public class ServerController {
             return saal;
         }
 
+        public String getKuupäev() { return kuupäev; } // getter for date
+
+        public int getVabu_kohti() { return vabu_kohti; } // getter for available seats
     }
+
+
+
     // Fetcitud jsoni teen all defineeritud recordite jargi objektideks
     public record Film(long id, String film, String age, int length, String genre) { }
-    public record Seanss(long id, Film film , String kell, int saal) { }
-    public record Seansid (List<Seanss>seansid){ }
+    public record Seanss(long id, Film film, String kell, int saal, String kuupäev, int vabu_kohti) { }
 }

@@ -1,8 +1,10 @@
 <template>
   <div class="seanss-item">
-    <h3>Film: {{ seanss.film.film }}</h3>
+    <h3>{{ seanss.film.film }}</h3>
+    <p>Kuupäev: {{ seanss.kuupäev }}</p>
     <p>Kell: {{ seanss.kell }}</p>
     <p>Saal: {{ seanss.saal }}</p>
+    <p>Vabu kohti: {{ seanss.vabu_kohti }}</p>
   </div>
 </template>
 
