@@ -20,7 +20,7 @@
   <br>
   <div class="seansid-container">
     <div v-for="seansselem in filteredSeansid" class="seansid">
-      <Seanss :seanss="seansselem"></Seanss>
+      <Seanss :seanss="seansselem" @select-seanss="goToSeatSelection"></Seanss>
     </div>
   </div>
 </template>
@@ -76,6 +76,12 @@ export default {
       this.uniqueDates = [...new Set(this.sortedSeansid.map(seans => seans.kuupäev))];
       this.uniqueGenres = [...new Set(this.sortedSeansid.map(seans => seans.film.genre))];
       this.uniqueAges = [...new Set(this.sortedSeansid.map(seans => seans.film.age))];
+    },
+    goToSeatSelection(seanss) {
+      this.$router.push({
+        name: 'IstmeteValik',
+        params: { id: seanss.id }
+      });
     }
   },
   mounted() {

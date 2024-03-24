@@ -1,15 +1,15 @@
 package ee.cinema.Backend;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:8080") // port kust frontend jookseb
 @RestController
@@ -38,7 +38,7 @@ public class ServerController {
                             .orElse(null);
 
                     if (film != null) {
-                        return new Seanss(film.getId(), new Film(
+                        return new Seanss(seans.getSeanss_id(), new Film(
                                 film.getId(), film.getFilm(), film.getAge(), film.getLength(), film.getGenre()
                         ), seans.getKell(), Integer.parseInt(seans.getSaal()), seans.getKuupäev(), seans.getVabu_kohti());
                     }
@@ -49,6 +49,18 @@ public class ServerController {
                 .collect(Collectors.toList());
 
         return seanssList;
+    }
+
+    @GetMapping("/hoivatud_kohad/{id}")
+    public List<Integer> hoivatud_kohad(@PathVariable("id") Long seanssId){
+        ExternalApiResponse response = restTemplate.getForObject(apiUrl, ExternalApiResponse.class);
+        for (ExternalApiSeans externalApiSeans : response.getSeansid()) {
+            if (externalApiSeans.getSeanss_id() == seanssId) {
+                System.out.println(externalApiSeans.getHoivatud_kohad());
+                return externalApiSeans.getHoivatud_kohad();
+            }
+        }
+        return Collections.emptyList();
     }
 
 
@@ -103,12 +115,24 @@ public class ServerController {
 
     public static class ExternalApiSeans {
         private long film_id;
+
+        @JsonProperty("id") // Ensure this matches the JSON key exactly
+        private long id;
         private String kell;
         private String saal;
         private String kuupäev; // added new field for date
         private int vabu_kohti; // added new field for available seats
 
+        @JsonProperty("hõivatud_kohad")
+        private List<Integer> hõivatud_kohad;
+        public List<Integer> getHoivatud_kohad() {
+            return hõivatud_kohad;
+        }
+
         // Getters (and setters if needed)
+        public long getSeanss_id() {
+            return id;
+        }
         public long getFilm_id() {
             return film_id;
         }
@@ -125,6 +149,7 @@ public class ServerController {
 
         public int getVabu_kohti() { return vabu_kohti; } // getter for available seats
     }
+
 
 
 
