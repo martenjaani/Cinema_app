@@ -1,8 +1,7 @@
 <template>
   <div
       class="seat"
-      :class="{ 'occupied': isOccupied, 'selected': isSelected }"
-      @click="select"
+      :class="{ 'occupied': isOccupied, 'selected': selected }"
   >
     {{ seatNumber }}
   </div>
@@ -11,27 +10,9 @@
 <script>
 export default {
   props: {
-    seatNumber: {
-      type: Number,
-      required: true
-    },
-    isOccupied: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      isSelected: false
-    };
-  },
-  methods: {
-    select() {
-      if (!this.isOccupied) {
-        this.isSelected = !this.isSelected;
-        this.$emit('click');
-      }
-    }
+    seatNumber: Number,
+    isOccupied: Boolean,
+    selected: Boolean,
   }
 };
 </script>
