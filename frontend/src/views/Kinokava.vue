@@ -1,6 +1,9 @@
 <template>
   <h2>Seansid</h2>
   <br>
+
+  <router-link to="/vaatamisajalugu" class="vaatamisajalugu-button">Go to Vaatamisajalugu</router-link>
+
   <div class="filter-bar">
     <select v-model="filters.kuupäev">
       <option value="">Kõik kuupäevad</option>
@@ -120,5 +123,15 @@ h2, .filter-bar {
 .seansid-container {
   flex: 1;
   overflow: auto;
+}
+
+.vaatamisajalugu-button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 10px 0;
+  background-color: #36791a;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
 }
 </style>

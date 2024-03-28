@@ -55,10 +55,10 @@ export default {
           let currentTotalDistance = 0;
 
           for (let i = 0; i < requiredSeats; i++) {
-            if (startCol + i > this.seatsPerRow) break; // Stay within the row bounds
+            if (startCol + i > this.seatsPerRow) break; //stay inbounds
 
             const seatNumber = (row - 1) * this.seatsPerRow + startCol + i;
-            if (!this.isSeatAvailable(seatNumber)) break; // Seat is occupied or already selected
+            if (!this.isSeatAvailable(seatNumber)) break;
 
             currentSequence.push(seatNumber);
             currentTotalDistance += this.calculateSeatDistance(seatNumber);
@@ -79,8 +79,7 @@ export default {
       while (requiredSeats > 0) {
         console.log('Selecting', requiredSeats, 'seats');
         let bestSeats = this.findBestSeats(requiredSeats);
-        // If findBestSeatsNaive cannot find a sequence of the desired length,
-        // iteratively reduce the requirement until some seats are found
+       //kui ei leia kohti kõrvuti olevaid kohti, siis proovima leida väiksema sequence
         let tempRequiredSeats = requiredSeats;
         while (bestSeats.length === 0 && tempRequiredSeats > 0) {
           tempRequiredSeats -= 1; // Reduce the seat requirement
@@ -91,7 +90,7 @@ export default {
 
         if (bestSeats.length === 0) {
           console.log("No available seats found. Stopping.");
-          break; // Exit if no seats can be found at all
+          break; 
         }
 
         this.selectedSeats.push(...bestSeats); // Add found seats to the selected list
