@@ -18,7 +18,8 @@ export default {
   props: {
     ostetudPilet: {
       type: Object,
-      required: true
+      required: true,
+      default: () => ({})
     },
     seats: {
       type: Array,
@@ -37,15 +38,16 @@ export default {
   padding: 10px;
   border-radius: 5px;
   width: 300px;
-  height: 320px;
+  max-height: 300px;
+  height: auto;
 }
 
 .seats-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: 200px;
+  gap: 5px;
   overflow-y: auto;
+  max-height: 150px;
 
 }
 .seats-container::-webkit-scrollbar {

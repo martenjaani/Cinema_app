@@ -1,10 +1,13 @@
 <template>
-  <h2>Seansid</h2>
+  <h1>Kinokava</h1>
   <br>
 
-  <router-link to="/vaatamisajalugu" class="vaatamisajalugu-button">Go to Vaatamisajalugu</router-link>
-
+  <button :class="{ 'soovitus-active': vaatamisSoovitusNupp}" @click="fetchGenresAndSort">
+    {{ vaatamisSoovitusNupp ? 'Ära soovita vaatamisajaloo põhjal' : 'Soovita vaatamisajaloo põhjal' }}
+  </button><br><br>
   <div class="filter-bar">
+
+
     <select v-model="filters.kuupäev">
       <option value="">Kõik kuupäevad</option>
       <option v-for="date in uniqueDates" :key="date" :value="date">{{ date }}</option>
@@ -46,6 +49,7 @@ export default {
         genre: '',
         age: ''
       },
+      vaatamisSoovitusNupp: false
     };
   },
   computed: {
@@ -74,6 +78,25 @@ export default {
           .catch(error => {
             console.error('Fetch error:', error);
           });
+    },
+    fetchGenresAndSort() {
+      if(this.vaatamisSoovitusNupp){
+        this.fetchRecords();
+      } else {
+        fetch('http://localhost:3000/genres')
+            .then(response => response.json())
+            .then(genres => {
+              // Sort the genres by count in descending order
+              const sortedGenres = genres.sort((a, b) => b.count - a.count);
+              // Get the two genres with the highest counts
+              const topGenres = sortedGenres.slice(0, 2).map(genre => genre.genre);
+              // Filter the sortedSeansid array to only include movies that belong to the top genres
+              this.sortedSeansid = this.sortedSeansid.filter(seans => topGenres.includes(seans.film.genre));
+            })
+            .catch(error => console.error('Error:', error));
+      }
+      this.vaatamisSoovitusNupp = !this.vaatamisSoovitusNupp;
+
     },
     populateFilters() {
       this.uniqueDates = [...new Set(this.sortedSeansid.map(seans => seans.kuupäev))];
@@ -105,7 +128,7 @@ export default {
   gap: 10px;
 }
 
-h2 {
+h1 {
   text-align: center;
 }
 
@@ -116,7 +139,7 @@ body {
   height: 100vh;
 }
 
-h2, .filter-bar {
+h1, .filter-bar {
   flex: 0;
 }
 
@@ -133,5 +156,9 @@ h2, .filter-bar {
   color: white;
   text-decoration: none;
   border-radius: 5px;
+}
+
+.soovitus-active {
+  //background-color: #75af75; /* or any shade of green you prefer */
 }
 </style>

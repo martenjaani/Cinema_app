@@ -4,7 +4,7 @@
     <br>
   </div>
   <div class="piletid-konteiner">
-    <div v-for="pilet in vaatamisajalugu" class="piletid-item">
+    <div v-for="pilet in vaatamisajalugu" class="piletid-item" v-if="seansid.length && vaatamisajalugu.length">
       <OstetudPilet :ostetudPilet="findSeanssById(pilet.seanssId)" :seats="pilet.selectedSeats"/>      </div>
 
   </div>
@@ -27,7 +27,7 @@ export default {
   methods: {
 
     fetchRecords() {
-      fetch(`http://localhost:3000/seansid`)
+      return fetch(`http://localhost:3000/seansid`)
           .then(response => {
             if (!response.ok) {
               throw new Error('Network response was not ok');
@@ -40,10 +40,10 @@ export default {
           .catch(error => {
             console.error('Fetch error:', error);
           });
-},
+    },
 
     fetchVaatamisajalugu() {
-      fetch(`http://localhost:3000/ajalugu`)
+      return fetch(`http://localhost:3000/ajalugu`)
           .then(response => {
             if (!response.ok) {
               throw new Error('Network response was not ok');
@@ -59,12 +59,17 @@ export default {
           });
     },
     findSeanssById(seanssId) {
-      return this.seansid.find(seans => seans.id === seanssId);
+      return this.seansid.find(seanss => seanss.id === seanssId);
     }
   },
-  mounted() {
-    this.fetchVaatamisajalugu();
-    this.fetchRecords();
+  created() {
+    Promise.all([this.fetchRecords(),  this.fetchVaatamisajalugu()])
+        .then(() => {
+          console.log('Data fetched');
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
   }
 };
 
@@ -75,6 +80,13 @@ export default {
 <style scoped>
 .piletid-item{
   padding: 10px;
-
+  align-self: center;
+}
+h1{
+  text-align: center;
+}
+.piletid-konteiner{
+  display: flex;
+  flex-direction: column;
 }
 </style>

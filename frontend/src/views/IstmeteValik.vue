@@ -1,20 +1,33 @@
 <template>
   <div class="istmete-valimine" >
+    <div class="film-info">
+      <p>{{ film }} | {{ genre }} | {{ kuupäev }} {{ kell }} | saal {{ saal }}</p>
+    </div>
+
   <h2>Vali kohtade arv</h2>
   <br>
 
+
   <div class="seat-selector">
-    <button @click="osta" class="osta-nupp">Osta Piletid</button>
 
     <div class="kohtadeValik">{{ istekohtadeArv }}</div>
     <button @click="vahenda" class="minus-button">-</button>
     <button @click="suurenda" class="plus-button">+</button>
+    <button @click="osta" class="osta-nupp">Osta Piletid</button>
+
   </div>
+
 
 
     <br>
 
-    <SaaliPlaan :occupiedSeats="occupiedSeats" :selectedSeats="selectedSeats" :istekohtadeArv="istekohtadeArv" @update:selectedSeats="selectedSeats = $event"/>
+    <SaaliPlaan
+        ref="SaaliPlaan"
+        :occupiedSeats="occupiedSeats"
+        :selectedSeats="selectedSeats"
+        :istekohtadeArv="istekohtadeArv"
+        @update:selectedSeats="selectedSeats = $event"
+    />
 
   </div>
 </template>
@@ -22,6 +35,7 @@
 <script>
 import SaaliPlaan from '@/components/SaaliPlaan.vue';
 import {toRaw} from "vue";
+import saaliPlaan from "@/components/SaaliPlaan.vue";
 
 export default {
   components: { SaaliPlaan },
@@ -29,7 +43,13 @@ export default {
     return {
       occupiedSeats: [],
       istekohtadeArv: 1,
-      selectedSeats: []
+      selectedSeats: [],
+      film: '',
+      genre: '',
+      kuupäev: '',
+      kell: '',
+      saal: '',
+
     };
   },
   methods: {
@@ -39,11 +59,31 @@ export default {
           .then(data => {
             console.log('Occupied Seats:', data); // Log to check the received data
             this.occupiedSeats = data;
+            this.$nextTick(() => {
+              this.$refs.SaaliPlaan.selectSeats();
+            });
           })
           .catch(error => {
             console.error('Error fetching occupied seats:', error);
           });
     },
+
+    fetchSeanss(seanssId) {
+      fetch(`http://localhost:3000/seanss/${seanssId}`)
+          .then(response => response.json()) // Make sure you're parsing the JSON response
+          .then(seanss => {
+            console.log(seanss)
+            this.film = seanss.film.film;
+            this.genre = seanss.film.genre;
+            this.kuupäev = seanss.kuupäev;
+            this.kell = seanss.kell;
+            this.saal = seanss.saal;
+          })
+          .catch(error => {
+            console.error('Error fetching seanss:', error);
+          });
+    },
+
     suurenda() {
       if (this.istekohtadeArv < 50-this.occupiedSeats.length)
       this.istekohtadeArv++;
@@ -74,6 +114,24 @@ export default {
           })
           .then(data => {
             console.log('Response:', data);
+
+            const genreUrl = `http://localhost:3000/genres/${this.genre}`;
+            return fetch(genreUrl, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({}) // send an empty object or any data required by the server
+            });
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('Response:', data);
             this.$router.push('/');
           })
           .catch((error) => {
@@ -84,7 +142,10 @@ export default {
   created() {
     const seanssId = this.$route.params.id;
     this.fetchOccupiedSeats(seanssId);
-  }
+    this.fetchSeanss(seanssId);
+
+  },
+
 };
 </script>
 <style>
@@ -100,9 +161,15 @@ export default {
   font-size: 1.5rem;
   border-radius: 50%;
   border: none;
-  background-color: #36791a;
+  background-color: #444944;;
   color: white;
   cursor: pointer;
+}
+.plus-button:hover, .minus-button:hover, .osta-nupp:hover {
+  background-color: #2f6c17;
+}
+.plus-button{
+  margin-right: 50px;
 }
 .kohtadeValik {
 
@@ -118,9 +185,24 @@ export default {
   height: 30px;
   font-size: 1.1rem;
   border-radius: 5%;
-  margin-right: 50px;
   border: none;
-  background-color: #36791a;
+  background-color: #444944;
   cursor: pointer;
+  color: var(--color-text);
+}
+h2{
+  text-align: center;
+}
+
+.film-info {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.film-info p {
+  text-align: left;
+  font-size: medium;
+  margin: 0;
+  padding: 5px;
 }
 </style>

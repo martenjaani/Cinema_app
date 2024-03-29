@@ -22,7 +22,6 @@ export default {
   margin: 5px;
   padding: 10px;
   border: 1px solid #ddd;
-  cursor: pointer;
 }
 
 .occupied {

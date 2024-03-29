@@ -39,7 +39,7 @@ public class ServerController {
                     if (film != null) {
                         return new Seanss(seans.getSeanss_id(), new Film(
                                 film.getId(), film.getFilm(), film.getAge(), film.getLength(), film.getGenre()
-                        ), seans.getKell(), Integer.parseInt(seans.getSaal()), seans.getKuupäev(), seans.getHoivatud_kohad().size());
+                        ), seans.getKell(), Integer.parseInt(seans.getSaal()), seans.getKuupäev(), 50-seans.getHoivatud_kohad().size());
                     }
                     return null;
                 })
@@ -48,6 +48,50 @@ public class ServerController {
                 .collect(Collectors.toList());
 
         return seanssList;
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<String> resetData() {
+        String resetUrl = "https://api.jsonbin.io/v3/b/6606a70fe41b4d34e4dbec71?meta=false";
+
+        // võtan algsed json andmed reset url-ist
+        ExternalApiResponse resetData = restTemplate.getForObject(resetUrl, ExternalApiResponse.class);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Master-Key", "$2a$10$3jMY3eu7Dln/7A/8ObVOzujsc/4m33Bq4rI11HnA1wKMofwuGaF7u"); // replace with your jsonbin.io API key
+        HttpEntity<ExternalApiResponse> entity = new HttpEntity<>(resetData, headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.PUT, entity, String.class);
+
+        return ResponseEntity.ok(responseEntity.getBody());
+    }
+
+    @GetMapping("/seanss/{id}")
+    public Seanss getSeanssById(@PathVariable("id") Long seanssId) {
+
+        ExternalApiResponse response = restTemplate.getForObject(apiUrl, ExternalApiResponse.class);
+
+        // Map the sessions to the Seanss structure and filter by id
+        Optional<Seanss> seanss = response.getSeansid().stream()
+                .filter(seans -> seans.getSeanss_id() == seanssId)
+                .map(seans -> {
+                    ExternalApiFilm film = response.getFilmid().stream()
+                            .filter(f -> f.getId() == seans.getFilm_id())
+                            .findFirst()
+                            .orElse(null);
+
+                    if (film != null) {
+                        return new Seanss(seans.getSeanss_id(), new Film(
+                                film.getId(), film.getFilm(), film.getAge(), film.getLength(), film.getGenre()
+                        ), seans.getKell(), Integer.parseInt(seans.getSaal()), seans.getKuupäev(), 50-seans.getHoivatud_kohad().size());
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .findFirst();
+
+        return seanss.orElse(null);
     }
 
     @GetMapping("/hoivatud_kohad/{id}")
@@ -98,6 +142,44 @@ public class ServerController {
         return ResponseEntity.ok(responseEntity.getBody());
     }
 
+    @GetMapping("/genres")
+    public List<ExternalApiGenres> genres() {
+        ExternalApiResponse response = restTemplate.getForObject(apiUrl, ExternalApiResponse.class);
+        if (response == null) {
+            return Collections.emptyList();
+        }
+        // Return the genres list
+        return response.getGenres();
+    }
+
+    @PutMapping("/genres/{genre}")
+    public ResponseEntity<String> updateGenre(@PathVariable String genre) {
+        ExternalApiResponse response = restTemplate.getForObject(apiUrl, ExternalApiResponse.class);
+
+        // vaatame kas genre on olemas
+        Optional<ExternalApiGenres> existingGenre = response.getGenres().stream()
+                .filter(g -> g.getGenre().equals(genre))
+                .findFirst();
+        System.out.println("genres: "+response);
+        if (existingGenre.isPresent()) {
+            // kui on siis suurendame counti
+            existingGenre.get().setCount(existingGenre.get().getCount() + 1);
+        } else {
+            // kui ei ole siis lisame
+            response.getGenres().add(new ExternalApiGenres(genre, 1));
+        }
+
+        // Send a PUT request to update the data
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Master-Key", "$2a$10$3jMY3eu7Dln/7A/8ObVOzujsc/4m33Bq4rI11HnA1wKMofwuGaF7u"); // replace with your jsonbin.io API key
+        HttpEntity<ExternalApiResponse> entity = new HttpEntity<>(response, headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.PUT, entity, String.class);
+        System.out.println("response: "+response.getGenres());
+        System.out.println("responseEntity: "+responseEntity.getBody());
+        return ResponseEntity.ok(responseEntity.getBody());
+    }
+
     public static class TicketRequest {
         private List<Integer> selectedSeats;
 
@@ -126,10 +208,31 @@ public class ServerController {
         }
     }
 
+    public static class ExternalApiGenres {
+        private String genre;
+        private int count;
+
+        public ExternalApiGenres(String genre, int count) {
+            this.genre = genre;
+            this.count = count;
+        }
+        public String getGenre() {
+            return genre;
+        }
+        public int getCount() {
+            return count;
+        }
+        public void setCount(int count) {
+            this.count = count;
+        }
+    }
+
 
     // Defineerin millisel kujul ma saan jsoni fetchiga kátte
     public static class ExternalApiResponse {
 
+        @JsonProperty("genres")
+        private List<ExternalApiGenres> genres = new ArrayList<>();
         @JsonProperty("ajalugu")
         private List<ExternalApiAjalugu> ajalugu = new ArrayList<>();
         @JsonProperty("filmid")
@@ -159,6 +262,13 @@ public class ServerController {
 
         public void setSeansid(List<ExternalApiSeans> seansid) {
             this.seansid = seansid;
+        }
+        public List<ExternalApiGenres> getGenres() {
+            return genres;
+        }
+
+        public void setGenres(List<ExternalApiGenres> genres) {
+            this.genres = genres;
         }
     }
 
@@ -236,7 +346,7 @@ public class ServerController {
     }
 
 
-    // Fetcitud jsoni teen all defineeritud recordite jargi objektideks
+    // Fetcitud jsoni saan teha defineeritud recordite jargi isenditeks
     public record Film(long id, String film, String age, int length, String genre) {
     }
 

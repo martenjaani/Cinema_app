@@ -9,6 +9,7 @@
           :selected="selectedSeats.includes(50 - (rowIndex * seatsPerRow) + seatIndex)"
       />
     </div>
+
   </div>
 </template>
 
@@ -90,7 +91,7 @@ export default {
 
         if (bestSeats.length === 0) {
           console.log("No available seats found. Stopping.");
-          break; 
+          break;
         }
 
         this.selectedSeats.push(...bestSeats); // Add found seats to the selected list
@@ -104,7 +105,9 @@ export default {
       this.selectedSeats = [];
       this.selectSeats();
     }
- }
+ },
+
+
 }
 </script>
 
