@@ -13,7 +13,7 @@
     <div class="kohtadeValik">{{ istekohtadeArv }}</div>
     <button @click="vahenda" class="minus-button">-</button>
     <button @click="suurenda" class="plus-button">+</button>
-    <button @click="osta" class="osta-nupp">Osta Piletid</button>
+    <button @click="osta" class="osta-nupp">Osta</button>
 
   </div>
 
