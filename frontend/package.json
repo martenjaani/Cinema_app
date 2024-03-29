@@ -7,10 +7,6 @@
     "dev": "vite --port 8080",
     "build": "vite build",
     "preview": "vite preview",
-    "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
-    "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
-    "test:unit": "cypress run --component",
-    "test:unit:dev": "cypress open --component",
     "start:both": "concurrently \"cd ..\\Backend && .\\gradlew.bat bootRun\" \"npm run dev\""
   },
   "dependencies": {
@@ -20,7 +16,6 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
     "concurrently": "^8.2.2",
-    "cypress": "^13.7.0",
     "start-server-and-test": "^2.0.3",
     "vite": "^5.1.6"
   }

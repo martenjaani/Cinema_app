@@ -99,7 +99,7 @@ public class ServerController {
         ExternalApiResponse response = restTemplate.getForObject(apiUrl, ExternalApiResponse.class);
         for (ExternalApiSeans externalApiSeans : response.getSeansid()) {
             if (externalApiSeans.getSeanss_id() == seanssId) {
-                System.out.println(externalApiSeans.getHoivatud_kohad());
+               // System.out.println(externalApiSeans.getHoivatud_kohad());
                 return externalApiSeans.getHoivatud_kohad();
             }
         }
@@ -160,7 +160,7 @@ public class ServerController {
         Optional<ExternalApiGenres> existingGenre = response.getGenres().stream()
                 .filter(g -> g.getGenre().equals(genre))
                 .findFirst();
-        System.out.println("genres: "+response);
+        //ut.println("genres: "+response);
         if (existingGenre.isPresent()) {
             // kui on siis suurendame counti
             existingGenre.get().setCount(existingGenre.get().getCount() + 1);
@@ -175,8 +175,8 @@ public class ServerController {
         headers.set("X-Master-Key", "$2a$10$3jMY3eu7Dln/7A/8ObVOzujsc/4m33Bq4rI11HnA1wKMofwuGaF7u"); // replace with your jsonbin.io API key
         HttpEntity<ExternalApiResponse> entity = new HttpEntity<>(response, headers);
         ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.PUT, entity, String.class);
-        System.out.println("response: "+response.getGenres());
-        System.out.println("responseEntity: "+responseEntity.getBody());
+      //  System.out.println("response: "+response.getGenres());
+       // System.out.println("responseEntity: "+responseEntity.getBody());
         return ResponseEntity.ok(responseEntity.getBody());
     }
 
