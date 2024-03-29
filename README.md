@@ -29,4 +29,4 @@ Koduleheküljel avaneb nimekiri seanssidest. Võimalik on seansse filtreerida ku
 
 ### Lõpetuseks
 
-Loodan, et loodud projekt annab aimu minu oskustest uusi teadmisi ja tehnoloogiaid kiiresti omandada, ning võimest omandatud teadmisi praktiliselt rakendada.
+Loodan, et loodud projekt annab aimu minu oskustest uusi teadmisi ja tehnoloogiaid kiiresti omandada, ning võimest omandatud teadmisi praktiliselt rakendada. 
