@@ -35,6 +35,6 @@ export default {
 }
 
 .seanss-item:hover {
-  background-color: darkslategray; /* Or any color you prefer */
+  background-color: #6a8080; /* Or any color you prefer */
 }
 </style>
