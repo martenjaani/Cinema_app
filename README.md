@@ -4,7 +4,7 @@ Marten Mathias Jaani
 
 ### KÄIVITAMINE
 
-1. Klooni repo
+1. Klooni repo (või lae alla zip ja extracti)
 2. Navigeeri Frontend kausta
 3. käsurealt: <br>
   npm install <br>
