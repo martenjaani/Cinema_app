@@ -188,7 +188,7 @@ export default {
   border: none;
   background-color: #444944;
   cursor: pointer;
-  color: var(--color-text);
+  color: whitesmoke;
 }
 h2{
   text-align: center;
