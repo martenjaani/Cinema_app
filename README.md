@@ -1,6 +1,7 @@
 ## Cinema_app
 CGI suvepraktikale kandideerimise ülesanne <br>
-Marten Mathias Jaani
+Marten Mathias Jaani <br>
+marten.jaani@gmail.com
 
 ### KÄIVITAMINE
 
