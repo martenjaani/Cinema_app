@@ -31,6 +31,10 @@ Andmehoidlana kasutan jsonbin.io nimelist teenust. Andmed on mul json binnides n
 
 Koduleheküljel avaneb nimekiri seanssidest. Võimalik on seansse filtreerida kuupäeva, zanri ja vanusepiiranguga. Lisaks on nupp "Soovita vaatamisajaloo põhjal", millele vajutades saad filmisoovitused olenevalt sellest millise zanri filmile oled enim pileti ostnud. Seansi peale vajutades suunatakse uuele leheküljele, kus saab valida istmete arvu. Istmete arvu põhjal valib programm kasutajale optimaalsed isted. Kui vajutada Osta, siis suunatakse tagasi koduleheküljele, ning ostetud pileteid saab vaadata, kui vajutada nuppu "Ostetud Piletid". Seal on nimekiri piletidest seansside kaupa. Kui osteti palju pileteid seansile, siis on seansi-konteineri sees võimalik scrollida ja näha oma kohti. Headeris on veel üks nupp, "Taasta lehekülg algseks", mis eemaldab kasutaja ostetud piletid (ehk ka vaatamisajaloo) ja seansside hõivatud kohtadelt eemaldatakse sinu poolt ostetud kohad.
 
+![image](https://github.com/user-attachments/assets/aa043253-40fc-4b66-b000-6c92340b4a19)
+![image](https://github.com/user-attachments/assets/bd841d35-4176-4ee5-9898-4d6a74cdaa06)
+
+
 ### Lõpetuseks
 
 Loodan, et loodud projekt annab aimu minu oskustest uusi teadmisi ja tehnoloogiaid kiiresti omandada, ning võimest omandatud teadmisi praktiliselt rakendada. 
